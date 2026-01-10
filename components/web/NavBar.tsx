@@ -1,8 +1,17 @@
+"use client";
+
+import { authClient } from "@/lib/auth-client";
+import { useConvexAuth } from "convex/react";
 import Link from "next/link";
-import { buttonVariants } from "../ui/button";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Button, buttonVariants } from "../ui/button";
 import { ThemeToggle } from "./theme-toggle";
 
 export const Navbar = () => {
+  const { isAuthenticated, isLoading } = useConvexAuth();
+  const router = useRouter();
+
   return (
     <nav className="flex w-full py-5 items-center justify-between">
       <div className="flex items-center gap-8">
@@ -24,15 +33,39 @@ export const Navbar = () => {
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <Link href="/auth/sign-up" className={buttonVariants()}>
-          Sign up
-        </Link>
-        <Link
-          href="/auth/login"
-          className={buttonVariants({ variant: "outline" })}
-        >
-          Login
-        </Link>
+        {isLoading ? null : isAuthenticated ? (
+          <Button
+            className={buttonVariants()}
+            onClick={() =>
+              authClient.signOut({
+                fetchOptions: {
+                  onSuccess: () => {
+                    toast.success("Logged out successfully");
+                    router.push("/");
+                  },
+                  onError: (error) => {
+                    toast.error(error.error.message);
+                  },
+                },
+              })
+            }
+          >
+            Logout
+          </Button>
+        ) : (
+          <>
+            <Link href="/auth/sign-up" className={buttonVariants()}>
+              Sign up
+            </Link>
+            <Link
+              href="/auth/login"
+              className={buttonVariants({ variant: "outline" })}
+            >
+              Login
+            </Link>
+          </>
+        )}
+
         <ThemeToggle />
       </div>
     </nav>

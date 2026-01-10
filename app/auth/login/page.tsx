@@ -1,6 +1,5 @@
 "use client";
-
-import { signUpSchema } from "@/app/schemas/auth";
+import { loginSchema } from "@/app/schemas/auth";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -25,27 +24,25 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-const SignUpPage = () => {
-  const router = useRouter();
+const LoginPage = () => {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
   const form = useForm({
     defaultValues: {
-      name: "",
       email: "",
       password: "",
     },
-    resolver: zodResolver(signUpSchema),
+    resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = async (data: z.infer<typeof signUpSchema>) => {
+  const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     startTransition(async () => {
-      await authClient.signUp.email({
+      await authClient.signIn.email({
         email: data.email,
         password: data.password,
-        name: data.name,
         fetchOptions: {
           onSuccess: () => {
-            toast.success("Signed up successfully");
+            toast.success("Logged in successfully");
             router.push("/");
           },
           onError: (error) => {
@@ -55,33 +52,15 @@ const SignUpPage = () => {
       });
     });
   };
-
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Sign up</CardTitle>
-        <CardDescription>Create an account to get started</CardDescription>
+        <CardTitle>Login</CardTitle>
+        <CardDescription>Sign in to get started right away</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <FieldGroup className="gap-4">
-            <Controller
-              name="name"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field>
-                  <FieldLabel>Full Name</FieldLabel>
-                  <Input
-                    placeholder="Jhon Doe"
-                    {...field}
-                    aria-invalid={fieldState.invalid}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
             <Controller
               name="email"
               control={form.control}
@@ -124,7 +103,7 @@ const SignUpPage = () => {
                   <span>Loading...</span>
                 </>
               ) : (
-                <span>Sign Up</span>
+                <span>Login</span>
               )}
             </Button>
           </FieldGroup>
@@ -134,4 +113,4 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage;
+export default LoginPage;
