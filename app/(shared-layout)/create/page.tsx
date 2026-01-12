@@ -29,6 +29,7 @@ const CreatePage = () => {
     defaultValues: {
       title: "",
       content: "",
+      image: undefined,
     },
     resolver: zodResolver(postSchema),
   });
@@ -85,6 +86,28 @@ const CreatePage = () => {
                       placeholder="Super cool blog content"
                       {...field}
                       aria-invalid={fieldState.invalid}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="image"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field>
+                    <FieldLabel>Image</FieldLabel>
+                    <Input
+                      placeholder="Super cool blog content"
+                      aria-invalid={fieldState.invalid}
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        field.onChange(file);
+                      }}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />

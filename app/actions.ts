@@ -8,24 +8,52 @@ import z from "zod";
 import { postSchema } from "./schemas/blog";
 
 export async function createBlogAction(data: z.infer<typeof postSchema>) {
-  const parsed = postSchema.safeParse(data);
+  try {
+    const parsed = postSchema.safeParse(data);
 
-  if (!parsed.success) {
-    throw new Error("Something went wrong");
+    if (!parsed.success) {
+      throw new Error("Something went wrong");
+    }
+
+    const token = await getToken();
+    const imageUrl = await fetchMutation(
+      api.posts.generateImageUploadUrl,
+      {},
+      { token }
+    );
+
+    const uploadResult = await fetch(imageUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": parsed.data.image.type,
+      },
+      body: parsed.data.image,
+    });
+
+    if (!uploadResult.ok) {
+      return {
+        error: "Failed to upload image",
+      };
+    }
+
+    const { storageId } = await uploadResult.json();
+
+    await fetchMutation(
+      api.posts.createPost,
+      {
+        title: parsed.data.title,
+        body: parsed.data.content,
+        imageStorageId: storageId,
+      },
+      {
+        token,
+      }
+    );
+  } catch {
+    return {
+      error: "Failed to create post",
+    };
   }
 
-  const token = await getToken();
-
-  await fetchMutation(
-    api.posts.createPost,
-    {
-      title: parsed.data.title,
-      body: parsed.data.content,
-    },
-    {
-      token,
-    }
-  );
-
-  return redirect("/");
+  return redirect("/blog");
 }
