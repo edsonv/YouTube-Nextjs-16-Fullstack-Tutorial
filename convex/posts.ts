@@ -27,7 +27,21 @@ export const getPosts = query({
   args: {},
   handler: async (ctx) => {
     const posts = await ctx.db.query("posts").order("desc").collect();
-    return posts;
+
+    return await Promise.all(
+      posts.map(async (post) => {
+        const resolvedImageUrl =
+          post.imageStorageId !== undefined
+            ? await ctx.storage.getUrl(post.imageStorageId)
+            : null;
+
+        return {
+          ...post,
+          imageUrl: resolvedImageUrl,
+        };
+      })
+    );
+    // return posts;
   },
 });
 
@@ -40,5 +54,28 @@ export const generateImageUploadUrl = mutation({
     }
 
     return await ctx.storage.generateUploadUrl();
+  },
+});
+
+export const getPostById = query({
+  args: {
+    postId: v.id("posts"),
+  },
+  handler: async (ctx, args) => {
+    const post = await ctx.db.get(args.postId);
+
+    if (!post) {
+      return null;
+    }
+
+    const resolvedImageUrl =
+      post?.imageStorageId !== undefined
+        ? await ctx.storage.getUrl(post.imageStorageId)
+        : null;
+
+    return {
+      ...post,
+      imageUrl: resolvedImageUrl,
+    };
   },
 });
