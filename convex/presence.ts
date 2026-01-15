@@ -23,7 +23,22 @@ export const list = query({
   args: { roomToken: v.string() },
   handler: async (ctx, { roomToken }) => {
     // Avoid adding per-user reads so all subscriptions can share same cache.
-    return await presence.list(ctx, roomToken);
+    const entries = await presence.list(ctx, roomToken);
+
+    return await Promise.all(
+      entries.map(async (entry) => {
+        const user = await authComponent.getAnyUserById(ctx, entry.userId);
+
+        if (!user) {
+          return entry;
+        }
+
+        return {
+          ...entry,
+          name: user.name,
+        };
+      })
+    );
   },
 });
 

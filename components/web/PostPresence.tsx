@@ -1,3 +1,5 @@
+"use client";
+
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import FacePile from "@convex-dev/presence/facepile";
@@ -19,7 +21,7 @@ export const PostPresence = ({ roomId, userId }: IAppProps) => {
       <p className="text-xs uppercase tracking-wide text-muted-foreground">
         Viewing now
       </p>
-      <div>
+      <div className="text-black">
         <FacePile presenceState={presenceState} />
       </div>
     </div>
