@@ -80,7 +80,6 @@ const PostIdPage = async ({ params }: PostIdPageProps) => {
           alt={post.title}
           fill
           className="object-cover hover:scale-105 transition-transform duration-500"
-          unoptimized
         />
       </div>
 

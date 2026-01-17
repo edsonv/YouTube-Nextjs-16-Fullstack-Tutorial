@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        hostname: "academic-raccoon-154.convex.cloud",
+      },
+      {
+        protocol: "https",
         hostname: "plus.unsplash.com",
       },
     ],
