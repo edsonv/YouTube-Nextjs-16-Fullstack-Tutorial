@@ -27,7 +27,9 @@ export const createPost = mutation({
 export const getPosts = query({
   args: {},
   handler: async (ctx) => {
+    console.log("Fetching posts...");
     const posts = await ctx.db.query("posts").order("desc").collect();
+    console.log(`Found ${posts.length} posts`);
 
     return await Promise.all(
       posts.map(async (post) => {
