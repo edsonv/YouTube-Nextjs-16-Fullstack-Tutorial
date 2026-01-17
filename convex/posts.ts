@@ -69,10 +69,9 @@ export const getPostById = query({
       return null;
     }
 
-    const resolvedImageUrl =
-      post?.imageStorageId !== undefined
-        ? await ctx.storage.getUrl(post.imageStorageId)
-        : null;
+    const resolvedImageUrl = post?.imageStorageId
+      ? await ctx.storage.getUrl(post.imageStorageId)
+      : null;
 
     return {
       ...post,
