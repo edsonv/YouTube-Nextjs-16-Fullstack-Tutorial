@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button, buttonVariants } from "../ui/button";
+import { SearchInput } from "./SearchInput";
 import { ThemeToggle } from "./theme-toggle";
 
 export const Navbar = () => {
@@ -33,6 +34,9 @@ export const Navbar = () => {
         </div>
       </div>
       <div className="flex items-center gap-2">
+        <div className="hidden md:block mr-2">
+          <SearchInput />
+        </div>
         {isLoading ? null : isAuthenticated ? (
           <Button
             className={buttonVariants()}
